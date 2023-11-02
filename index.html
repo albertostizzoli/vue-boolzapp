@@ -19,8 +19,8 @@
                 <!--side bar-->
                 <div class="top-sidebar">
                     <div class="image-contact">
-                        <img src="" alt="">
-                        <span>username</span>
+                        <img :src="`./img/avatar${user.avatar}.jpg`">
+                        <span>Name</span>
                     </div>
                     <div class="icons-top margin-right-10">
                         <ul class="unstyled-list">
@@ -29,13 +29,16 @@
                             <li class="text-grey"><i class="fa-solid fa-ellipsis-vertical"></i></li>
                         </ul>
                     </div>
-                    <div id="addNewChat" class="popup-newchat">
+                    <div  class="popup-newchat">
                         <div class="popup-content">
                             <h1>Nuova Chat</h1>
-                            <form>
-                                <label for="name-contact">Nuovo contatto</label>
-                                <input type="text" placeholder="Inserisci nome" name="name-contact" required>
-                                <label for="image-contact">Immagine contatto</label>
+                            <form class="form-conatainer">
+                                <label for="name-contact"><b>Nuovo contatto</b></label>
+                                <input type="text" placeholder="Inserisci nome" name="name-contact"  required>
+                                <label for="image-contact"><b>Immagine contatto</b></label>
+                                <select name="image-contact">
+                                    <option value="">Scegli l'immagine del contatto..</option>
+                                </select>
                                 <button>Inserisci</button>
                                 <button>Annulla</button>
                             </form>
@@ -52,33 +55,31 @@
                 </div>
                 <div class="searchbar-sidebar">
                     <i class="fa-solid fa-magnifying-glass text-grey bg-white"></i>
-                    <input type="text" placeholder="Cerca o inizia una nuova chat" class="full-searchbar" name="searchbar" id="searchbar">
+                    <input type="text" placeholder="Cerca o inizia una nuova chat" class="full-searchbar" name="searchbar" id="searchbar" v-model="name_filter">
                 </div>
                 <div class="chat-sidebar">
-                    <ul class="unstyled-list">
-                        <li class="item-chat">
-                            <div class="image-contact">
-                                <img src="" alt="">
-                            </div>
-                            <div class="info-contact">
-                                <span>Name</span>
-                                <span class="font-size-12 text-grey">Last message</span>
-                            </div>
-                            <span class="hour-last-message font-size-12 text-grey">Last hour message</span>
-                        </li>
-                    </ul>
-                </div>
+                        <ul class="unstyled-list" >
+                            <li class="item-chat" >
+                                <div class="image-contact">
+                                </div>
+                                <div class="info-contact">
+                                    <span>name</span>
+                                    <span class="font-size-12 text-grey">Last message</span>
+                                </div>
+                                <span class="hour-last-message font-size-12 text-grey">last message</span>
+                            </li> 
+                        </ul>
+                    </div>
             </div>
             <!-- main container -->
             <div class="main-container">
                 <div class="top-main-container">
                     <div class="user-main-container">
                         <div class="image-contact">
-                            <img src="" alt="">
                         </div>
                         <div class="info-contact">
-                            <span>ChatName</span>
-                            <span id="change-status-type" class="font-size-12 text-grey">Ultimo accesso oggi alle</span>
+                            <span>UtentChat</span>
+                            <span id="change-status-type" class="font-size-12 text-grey">Ultimo accesso oggi alle...</span>
                         </div>
                     </div>
                     <div class="icons-top margin-right-10">
@@ -96,11 +97,10 @@
                     <ul class="unstyled-list">
                         <li class="list-item">
                             <div class="message">
-                                <span class="font-size-15">Itemmessage</span>
+                                <span class="font-size-15">Message</span>
                                 <span class="font-size-10 text-grey absolute-bottom">Date</span>
                                 <span><i class="fa-solid fa-caret-down text-grey absolute-top"></i></span>
                                 <div class="dropdown active">
-
                                 </div>
                             </div>
                         </li>

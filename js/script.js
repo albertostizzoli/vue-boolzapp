@@ -1,8 +1,25 @@
+
 const {createApp} = Vue;
 
 createApp({
     data(){
         return{
+            chat_active: 0,
+            new_message: '',
+            new_name_contact: '',
+            name_filter: '',
+            delete_menu: false,
+            message_active: {
+                index: false,
+                show: false
+            },
+            user: {
+                name: 'Sofia',
+                avatar: '_io'
+            },
+            computer_answers: [
+                'Ciao', 'Tutto bene', 'Sì, vengo anche io!', 'Termino l\'esercizio Boolean ed esco', 'Ok!', 'E tu come stai?', 'Ho comprato una macchina nuova', 'Ho rotto il telefono...'
+            ],
             contacts: [
                 {
                     id: 1,
