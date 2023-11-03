@@ -168,7 +168,6 @@ body{
 
 .chat-sidebar{
     cursor: pointer;
-    overflow-y: scroll;
 }
 
 .icons-top ul li{
@@ -176,7 +175,8 @@ body{
 }
 
 .item-chat{
-    height: 70px;
+    height: 60px;
+
 }
 
 .image-contact{
@@ -314,6 +314,11 @@ body{
     border: 1px solid #888;
     width: 80%;
     position: relative;
+}
+
+.form-container{
+    display: flex;
+    flex-direction: column;
 }
   
 .close{

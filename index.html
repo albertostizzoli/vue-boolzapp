@@ -19,30 +19,32 @@
                 <!--side bar-->
                 <div class="top-sidebar">
                     <div class="image-contact">
-                        <img :src="`./img/avatar${user.avatar}.jpg`">
-                        <span>Name</span>
+                        <img src="img/avatar_io.jpg" alt="profile">
+                        <span>Sofia</span>
                     </div>
                     <div class="icons-top margin-right-10">
                         <ul class="unstyled-list">
                             <li class="text-grey"><i class="fa-solid fa-circle-notch"></i></li>
-                            <li class="text-grey"><i class="fa-solid fa-message"></i></li>
+                            <li class="text-grey"><i class="fa-solid fa-message" @click="showNewChat"></i></li>
                             <li class="text-grey"><i class="fa-solid fa-ellipsis-vertical"></i></li>
                         </ul>
                     </div>
-                    <div  class="popup-newchat">
+                    <div id="addNewChat" class="popup-newchat">
                         <div class="popup-content">
                             <h1>Nuova Chat</h1>
-                            <form class="form-conatainer">
-                                <label for="name-contact"><b>Nuovo contatto</b></label>
-                                <input type="text" placeholder="Inserisci nome" name="name-contact"  required>
-                                <label for="image-contact"><b>Immagine contatto</b></label>
+                            <form class="form-container">
+                                <label for="name-contact">Nuovo contatto</label>
+                                <input type="text" placeholder="Inserisci nome" name="name-contact"
+                                    v-model="new_name_contact" required>
+                                <label for="image-contact">Immagine contatto</label>
                                 <select name="image-contact">
-                                    <option value="">Scegli l'immagine del contatto..</option>
+                                    <option value="">Scegli l'immagine del contatto</option>
+                                    <option v-for="item in contacts" :value="item.avatar">{{ item.avatar }}</option>
                                 </select>
-                                <button>Inserisci</button>
+                                <button @click="addNewChat">Inserisci</button>
                                 <button>Annulla</button>
                             </form>
-                            <span class="close">&times;</span>
+                            <span class="close" @click="closeNewChat">&times;</span>
                         </div>
                     </div>
                 </div>
@@ -55,52 +57,65 @@
                 </div>
                 <div class="searchbar-sidebar">
                     <i class="fa-solid fa-magnifying-glass text-grey bg-white"></i>
-                    <input type="text" placeholder="Cerca o inizia una nuova chat" class="full-searchbar" name="searchbar" id="searchbar" v-model="name_filter">
+                    <input type="text" placeholder="Cerca o inizia una nuova chat" class="full-searchbar"
+                        name="searchbar" id="searchbar" v-model="name_filter">
                 </div>
                 <div class="chat-sidebar">
-                        <ul class="unstyled-list" >
-                            <li class="item-chat" >
-                                <div class="image-contact">
-                                </div>
-                                <div class="info-contact">
-                                    <span>name</span>
-                                    <span class="font-size-12 text-grey">Last message</span>
-                                </div>
-                                <span class="hour-last-message font-size-12 text-grey">last message</span>
-                            </li> 
-                        </ul>
-                    </div>
+                    <ul class="unstyled-list">
+                        <li v-for="(item,index) in searchChat" class="item-chat"
+                            :class="(chat_active == index) ? 'active' : ''" @click="changeChat(index)">
+                            <div class="image-contact">
+                                <img :src="item.avatar" alt="item.name">
+                            </div>
+                            <div class="info-contact">
+                                <span>{{ item.name }}</span>
+                                <span class="font-size-12 text-grey">{{ lastMessage(index, searchChat) }}</span>
+                            </div>
+                            <span class="hour-last-message font-size-12 text-grey">{{ hourLastMessage(index, searchChat)}}</span>
+                        </li>
+                    </ul>
+                </div>
             </div>
             <!-- main container -->
             <div class="main-container">
                 <div class="top-main-container">
                     <div class="user-main-container">
                         <div class="image-contact">
+                            <img :src="contacts[chat_active].avatar" alt="profile">
                         </div>
                         <div class="info-contact">
-                            <span>UtentChat</span>
-                            <span id="change-status-type" class="font-size-12 text-grey">Ultimo accesso oggi alle...</span>
+                            <span>{{ searchChat[chat_active].name }}</span>
+                            <span id="change-status-type" class="font-size-12 text-grey">Ultimo accesso oggi alle {{
+                                hourLastMessageSent(chat_active)}}</span>
                         </div>
                     </div>
                     <div class="icons-top margin-right-10">
                         <ul class="unstyled-list">
                             <li><i class="fa-solid fa-magnifying-glass text-grey"></i></li>
                             <li><i class="fa-solid fa-paperclip text-grey"></i></li>
-                            <li><i class="fa-solid fa-ellipsis-vertical text-grey"></i></li>
+                            <li><i class="fa-solid fa-ellipsis-vertical text-grey"
+                                    @click="dropdownDeleteMenu(chat_active)"></i></li>
                         </ul>
                     </div>
-                    <div class="dropdown-delete-menu active">
-
+                    <div v-if="delete_menu" class="dropdown-delete-menu active">
+                        <p @click="deleteChat(chat_active, searchChat)">Elimina chat</p>
+                        <p @click="deleteAllMessages(searchChat[chat_active].messages)">Elimina messaggi</p>
                     </div>
                 </div>
                 <div class="chat-container">
                     <ul class="unstyled-list">
-                        <li class="list-item">
-                            <div class="message">
-                                <span class="font-size-15">Message</span>
-                                <span class="font-size-10 text-grey absolute-bottom">Date</span>
-                                <span><i class="fa-solid fa-caret-down text-grey absolute-top"></i></span>
-                                <div class="dropdown active">
+                        <li class="list-item" v-for="(item, index) in searchChat[chat_active].messages"
+                            :class="(item.status == 'sent') ? 'message-sent' : ''">
+                            <div class="message" :class="(item.status == 'sent') ? 'bg-green' : 'bg-white'">
+                                <span class="font-size-15">{{ item.message }}</span>
+                                <span class="font-size-10 text-grey absolute-bottom">{{ splitDate(item.date) }}</span>
+                                <span><i class="fa-solid fa-caret-down text-grey absolute-top"
+                                        @click="dropdown(index)"></i></span>
+                                <div class="dropdown active"
+                                    v-if="message_active.show && message_active.index == index">
+                                    <p>Informazioni</p>
+                                    <p @click="deleteMessage(index, searchChat[chat_active].messages)">Cancella
+                                        messaggio</p>
                                 </div>
                             </div>
                         </li>
@@ -111,15 +126,18 @@
                         <i class="fa-regular fa-face-smile"></i>
                     </div>
                     <div class="text-bar">
-                        <input type="text" placeholder="Scrivi un messaggio">
+                        <input type="text" placeholder="Scrivi un messaggio" v-model="new_message"
+                            @keyup.enter="sendNewMessage">
                     </div>
                     <div class="emoji text-darkgrey">
+                        <i v-if="new_message" class="fa-solid fa-paper-plane" @click="sendNewMessage"></i>
                         <i class="fa-solid fa-microphone"></i>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/luxon@3.4.3/build/global/luxon.min.js"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script src="js/script.js"></script>
 </body>

@@ -1,3 +1,4 @@
+const dt = luxon.DateTime;
 
 const {createApp} = Vue;
 
@@ -13,12 +14,9 @@ createApp({
                 index: false,
                 show: false
             },
-            user: {
-                name: 'Sofia',
-                avatar: '_io'
-            },
             computer_answers: [
-                'Ciao', 'Tutto bene', 'Sì, vengo anche io!', 'Termino l\'esercizio Boolean ed esco', 'Ok!', 'E tu come stai?', 'Ho comprato una macchina nuova', 'Ho rotto il telefono...'
+                'Ciao', 'Tutto bene', 'Sì, vengo anche io!', 'Fra un po esco', 'Ok!', 'E tu come stai?', 'Ho comprato una macchina nuova', 'Ho rotto il telefono...',
+                'Oggi vado all\'universita', 'Oggi andiamo al cinema?', 'Sto facendo una passeggiata', 'Dove stai andando?', 'Porto a lavare la macchina',
             ],
             contacts: [
                 {
@@ -193,7 +191,159 @@ createApp({
             ]
         }
     },
-    methods:{
-        
-    }
+    computed:{
+        searchChat(){
+            let filteredChat;
+            if(this.name_filter != ''){
+                filteredChat = this.contacts.filter((elem) => {
+                    return elem.name.toLowerCase().includes(this.name_filter);
+                })
+                return filteredChat;
+            }
+            else{
+                filteredChat = this.contacts;
+            }
+            return filteredChat;
+        }
+    },    
+    methods: {
+        splitDate(date){
+            let new_date = date.split(' ')[1].substring(0, 5);
+            return new_date;
+        },
+        changeChat(index){
+            this.message_active.index = false;
+            this.message_active.show = false;
+            this.chat_active = index;
+            this.delete_menu = false;
+        },
+        sendNewMessage(){
+            let change_status_type = document.getElementById("change-status-type");
+            if(this.new_message.trim()){
+                let new_date = this.generateNewDate();
+                let object = {
+                    date: new_date,
+                    message: this.new_message,
+                    status: 'sent'
+                };
+                this.contacts[this.chat_active].messages.push(object);
+                this.new_message = '';
+                setTimeout(() => { change_status_type.innerText = "...sta scrivendo...";},500)
+                setTimeout(() => {
+                    change_status_type.innerText = "Online";
+                    let new_date = this.generateNewDate();
+                    let object = {
+                        date: new_date,
+                        message: this.randomAnswer(),
+                        status: 'received'
+                    }
+                    this.contacts[this.chat_active].messages.push(object);
+                },3000)
+                setTimeout(() => { change_status_type.innerText = `Ultimo accesso alle ${this.hourLastMessageSent(this.chat_active)}`;}, 5000)
+            }
+        },
+        hourLastMessageSent(index){
+            let messages = this.contacts[index].messages;
+            if(messages.length > 0){
+                for(let i = 0; i < messages.length; i++){
+                    if(messages[i].status.includes('received')){
+                        let filter_messages = messages.filter((elem) => {
+                            return elem.status.includes('received');
+                        })
+                        let date = this.splitDate(filter_messages[filter_messages.length - 1].date);
+                        return date;
+                    }
+                }
+            }
+        },
+        hourLastMessage(index, filteredChat){
+            let messages = filteredChat[index].messages;
+            if(messages.length > 0){
+                let hour_last_message = this.splitDate(messages[messages.length - 1].date);
+                return hour_last_message;
+            }
+        },
+        lastMessage(index, filteredChat){
+            let messages = filteredChat[index].messages;
+            if(messages.length > 0){
+                let last_message = messages[messages.length-1].message;
+                if(last_message.length > 25){
+                    last_message = last_message.substring(0,25) + '...'
+                }
+                else{
+                    return last_message
+                }
+                return last_message;
+            }
+        },
+        generateNewDate(){
+            let now = dt.now().setLocale('it').toLocaleString(dt.DATETIME_SHORT_WITH_SECONDS);
+            return now;
+        },
+        dropdown(index){
+            if(!(this.message_active.show)){
+                if(this.message_active.index != false && this.message_active.index != index){
+                    this.message_active.index = false;
+                    this.message_active.show = false;
+                }
+                this.message_active.index = index;
+                this.message_active.show = true;
+            }
+            else{
+                this.message_active.show = false
+            }
+        },
+        deleteMessage(index, filteredChat){
+            filteredChat = filteredChat.splice(index, 1);
+            this.dropdown(index);
+            return filteredChat; 
+        },
+        deleteAllMessages(filteredChat){
+            filteredChat = filteredChat.splice(0, filteredChat.length);
+            this.dropdownDeleteMenu();
+            return filteredChat;
+        },
+        deleteChat(chatActive, filteredChat){
+            if(chatActive == filteredChat.length -1){
+                filteredChat = filteredChat.splice(chatActive, 1);
+                this.dropdownDeleteMenu();
+                this.chat_active = chatActive - 1;
+            }
+            else{
+                filteredChat = filteredChat.splice(chatActive, 1);
+                this.dropdownDeleteMenu();
+            }
+            return filteredChat;
+        },
+        randomAnswer(){
+            let random = Math.floor(Math.random() * this.computer_answers.length - 1)
+            return this.computer_answers[random];
+        },
+        dropdownDeleteMenu(){
+            if(!this.delete_menu){
+                this.delete_menu = true
+            }
+            else{
+                this.delete_menu = false
+            }
+        },
+        showNewChat(){
+            let new_chat = document.getElementById("addNewChat");
+            new_chat.style.display = "block";
+        },
+        closeNewChat(){
+            let new_chat = document.getElementById("addNewChat");
+            new_chat.style.display = "none";
+        },
+        addNewChat(){
+            let new_contact = {
+                name: this.new_name_contact,
+                avatar: '_1',
+                visible: true,
+                messages: []
+            }
+            this.contacts.push(new_contact);
+            return this.contacts;
+        }
+    },
 }).mount('#app');
