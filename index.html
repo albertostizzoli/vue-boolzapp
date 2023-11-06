@@ -31,20 +31,19 @@
                     </div>
                     <div id="addNewChat" class="popup-newchat">
                         <div class="popup-content">
-                            <h1>Nuova Chat</h1>
+                            <h3>Nuova Chat</h3>
                             <form class="form-container">
-                                <label for="name-contact">Nuovo contatto</label>
-                                <input type="text" placeholder="Inserisci nome" name="name-contact"
+                                <label for="name-contact"></label>
+                                <input type="text" placeholder="Nome del profilo" name="name-contact"
                                     v-model="new_name_contact" required>
-                                <label for="image-contact">Immagine contatto</label>
+                                <label for="image-contact"></label>
                                 <select name="image-contact">
                                     <option value="">Scegli l'immagine del contatto</option>
                                     <option v-for="item in contacts" :value="item.avatar">{{ item.avatar }}</option>
                                 </select>
-                                <button @click="addNewChat">Inserisci</button>
-                                <button>Annulla</button>
+                                <button class="button-1" @click="addNewChat">Inserisci</button>
+                                <button class="button-2" @click="closeNewChat">Annulla</button>
                             </form>
-                            <span class="close" @click="closeNewChat">&times;</span>
                         </div>
                     </div>
                 </div>
@@ -71,7 +70,8 @@
                                 <span>{{ item.name }}</span>
                                 <span class="font-size-12 text-grey">{{ lastMessage(index, searchChat) }}</span>
                             </div>
-                            <span class="hour-last-message font-size-12 text-grey">{{ hourLastMessage(index, searchChat)}}</span>
+                            <span class="hour-last-message font-size-12 text-grey">{{ hourLastMessage(index,
+                                searchChat)}}</span>
                         </li>
                     </ul>
                 </div>
